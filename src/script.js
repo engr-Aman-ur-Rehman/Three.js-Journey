@@ -4,9 +4,30 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
 // Sizes
 const sizes = {
-  width: 800,
-  height: 600,
+  width: window.innerWidth,
+  height: window.innerHeight,
 };
+
+window.addEventListener('resize', () => {
+  // Update Sizes
+  sizes.width = window.innerWidth;
+  sizes.height = window.innerHeight;
+
+  // Update Camera
+  camera.aspect = sizes.width / sizes.height;
+  camera.updateProjectionMatrix();
+  // Update Renderer
+  renderer.setSize(sizes.width, sizes.height);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+});
+
+window.addEventListener('dblclick', () => {
+  if (!document.fullscreenElement) {
+    canvas.requestFullscreen();
+  } else {
+    document.exitFullscreen();
+  }
+});
 
 // Cursor
 const cursor = {
@@ -70,6 +91,7 @@ const renderer = new THREE.WebGLRenderer({
   canvas: canvas,
 });
 renderer.setSize(sizes.width, sizes.height);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
 // Animate
 const clock = new THREE.Clock();
