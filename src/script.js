@@ -1,40 +1,60 @@
-import './style.css';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import gsap from 'gsap';
+import * as dat from 'lil-gui';
 
+console.log(dat);
 /**
  * Base
  */
+
+// DEBUG UI
+const gui = new dat.GUI();
+
+const param = {
+  color: 0x555555,
+  spin: () => {
+    gsap.to(mesh.rotation, { duration: 1, y: mesh.rotation.y + 10 });
+  },
+};
+
 // Canvas
 const canvas = document.querySelector('canvas.webgl');
 
 // Scene
 const scene = new THREE.Scene();
 
-// Object
+/**
+ * Object
+ */
 
-// Create an empty BufferGeometry
-const geometry = new THREE.BufferGeometry();
-
-// Create 50 triangles (450 values)
-const count = 200;
-const positionsArray = new Float32Array(count * 3 * 3);
-for (let i = 0; i < count * 3 * 3; i++) {
-  positionsArray[i] = (Math.random() - 0.5) * 4;
-}
-
-// Create the attribute and name it 'position'
-const positionsAttribute = new THREE.BufferAttribute(positionsArray, 3);
-geometry.setAttribute('position', positionsAttribute);
-
-const material = new THREE.MeshBasicMaterial({
-  color: 'pink',
-  wireframe: true,
-});
+const geometry = new THREE.BoxGeometry(1, 1, 1);
+const material = new THREE.MeshBasicMaterial({ color: param.color });
 const mesh = new THREE.Mesh(geometry, material);
 scene.add(mesh);
 
-// Sizes
+// Debug GUI
+
+// gui.add(mesh.position, 'y', -3, 3, 0.01);
+
+// Another Way.
+gui.add(mesh.position, 'y').min(-3).max(3).step(0.01).name('Elevation');
+
+gui.add(mesh, 'visible');
+gui.add(material, 'wireframe');
+
+// ADD COLOR
+
+gui.addColor(param, 'color').onChange(() => {
+  material.color.set(param.color);
+});
+
+// ADD Fuction
+gui.add(param, 'spin');
+
+/**
+ * Sizes
+ */
 const sizes = {
   width: window.innerWidth,
   height: window.innerHeight,
@@ -54,7 +74,10 @@ window.addEventListener('resize', () => {
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 });
 
-// Camera
+/**
+ * Camera
+ */
+// Base camera
 const camera = new THREE.PerspectiveCamera(
   75,
   sizes.width / sizes.height,
@@ -68,14 +91,18 @@ scene.add(camera);
 const controls = new OrbitControls(camera, canvas);
 controls.enableDamping = true;
 
-// Renderer
+/**
+ * Renderer
+ */
 const renderer = new THREE.WebGLRenderer({
   canvas: canvas,
 });
 renderer.setSize(sizes.width, sizes.height);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-// Animate
+/**
+ * Animate
+ */
 const clock = new THREE.Clock();
 
 const tick = () => {
