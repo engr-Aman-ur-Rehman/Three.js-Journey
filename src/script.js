@@ -1,23 +1,62 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-import gsap from 'gsap';
-import * as dat from 'lil-gui';
 
-console.log(dat);
+THREE.ColorManagement.enabled = false;
+
+/**
+ * Textures
+ */
+// const image = new Image();
+// const texture = new THREE.Texture(image);
+// image.onload = () => {
+//   texture.needsUpdate = true;
+// };
+// image.src = 'textures/door/color.jpg';
+
+// Another and more better way to load Textures.
+const loadingManager = new THREE.LoadingManager();
+loadingManager.onStart = () => {
+  console.log('On Start');
+};
+loadingManager.onLoad = () => {
+  console.log('On Load');
+};
+loadingManager.onProgress = () => {
+  console.log('On Progress');
+};
+loadingManager.onError = () => {
+  console.log('On Error');
+};
+
+const textureLoader = new THREE.TextureLoader(loadingManager);
+const colorTexture = textureLoader.load('textures/door/color.jpg');
+const alphaTexture = textureLoader.load('textures/door/alpha.jpg');
+const heightTexture = textureLoader.load('textures/door/height.jpg');
+const normalTexture = textureLoader.load('textures/door/normal.jpg');
+const ambientOcclusionTexture = textureLoader.load(
+  'textures/door/ambientOcclusion.jpg'
+);
+const metalnessTexture = textureLoader.load('textures/door/metalness.jpg');
+const roughnessTexture = textureLoader.load('textures/door/roughness.jpg');
+
+// colorTexture.repeat.x = 2;
+// colorTexture.repeat.y = 3;
+// colorTexture.wrapS = THREE.RepeatWrapping;
+// colorTexture.wrapT = THREE.RepeatWrapping;
+
+// colorTexture.offset.x = 0.5;
+// colorTexture.offset.y = 0.5;
+
+// colorTexture.rotation = Math.PI * 0.25;
+// colorTexture.center.x = 0.5;
+// colorTexture.center.y = 0.5;
+
+colorTexture.generateMipmaps = false;
+colorTexture.minFilter = THREE.NearestFilter;
+
 /**
  * Base
  */
-
-// DEBUG UI
-const gui = new dat.GUI();
-
-const param = {
-  color: 0x555555,
-  spin: () => {
-    gsap.to(mesh.rotation, { duration: 1, y: mesh.rotation.y + 10 });
-  },
-};
-
 // Canvas
 const canvas = document.querySelector('canvas.webgl');
 
@@ -27,30 +66,10 @@ const scene = new THREE.Scene();
 /**
  * Object
  */
-
 const geometry = new THREE.BoxGeometry(1, 1, 1);
-const material = new THREE.MeshBasicMaterial({ color: param.color });
+const material = new THREE.MeshBasicMaterial({ map: colorTexture });
 const mesh = new THREE.Mesh(geometry, material);
 scene.add(mesh);
-
-// Debug GUI
-
-// gui.add(mesh.position, 'y', -3, 3, 0.01);
-
-// Another Way.
-gui.add(mesh.position, 'y').min(-3).max(3).step(0.01).name('Elevation');
-
-gui.add(mesh, 'visible');
-gui.add(material, 'wireframe');
-
-// ADD COLOR
-
-gui.addColor(param, 'color').onChange(() => {
-  material.color.set(param.color);
-});
-
-// ADD Fuction
-gui.add(param, 'spin');
 
 /**
  * Sizes
@@ -84,7 +103,9 @@ const camera = new THREE.PerspectiveCamera(
   0.1,
   100
 );
-camera.position.z = 3;
+camera.position.x = 1;
+camera.position.y = 1;
+camera.position.z = 1;
 scene.add(camera);
 
 // Controls
@@ -97,6 +118,7 @@ controls.enableDamping = true;
 const renderer = new THREE.WebGLRenderer({
   canvas: canvas,
 });
+renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
 renderer.setSize(sizes.width, sizes.height);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
