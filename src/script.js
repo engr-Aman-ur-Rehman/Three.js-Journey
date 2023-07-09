@@ -4,57 +4,6 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 THREE.ColorManagement.enabled = false;
 
 /**
- * Textures
- */
-// const image = new Image();
-// const texture = new THREE.Texture(image);
-// image.onload = () => {
-//   texture.needsUpdate = true;
-// };
-// image.src = 'textures/door/color.jpg';
-
-// Another and more better way to load Textures.
-const loadingManager = new THREE.LoadingManager();
-loadingManager.onStart = () => {
-  console.log('On Start');
-};
-loadingManager.onLoad = () => {
-  console.log('On Load');
-};
-loadingManager.onProgress = () => {
-  console.log('On Progress');
-};
-loadingManager.onError = () => {
-  console.log('On Error');
-};
-
-const textureLoader = new THREE.TextureLoader(loadingManager);
-const colorTexture = textureLoader.load('textures/door/color.jpg');
-const alphaTexture = textureLoader.load('textures/door/alpha.jpg');
-const heightTexture = textureLoader.load('textures/door/height.jpg');
-const normalTexture = textureLoader.load('textures/door/normal.jpg');
-const ambientOcclusionTexture = textureLoader.load(
-  'textures/door/ambientOcclusion.jpg'
-);
-const metalnessTexture = textureLoader.load('textures/door/metalness.jpg');
-const roughnessTexture = textureLoader.load('textures/door/roughness.jpg');
-
-// colorTexture.repeat.x = 2;
-// colorTexture.repeat.y = 3;
-// colorTexture.wrapS = THREE.RepeatWrapping;
-// colorTexture.wrapT = THREE.RepeatWrapping;
-
-// colorTexture.offset.x = 0.5;
-// colorTexture.offset.y = 0.5;
-
-// colorTexture.rotation = Math.PI * 0.25;
-// colorTexture.center.x = 0.5;
-// colorTexture.center.y = 0.5;
-
-colorTexture.generateMipmaps = false;
-colorTexture.minFilter = THREE.NearestFilter;
-
-/**
  * Base
  */
 // Canvas
@@ -66,11 +15,18 @@ const scene = new THREE.Scene();
 /**
  * Object
  */
-const geometry = new THREE.BoxGeometry(1, 1, 1);
-const material = new THREE.MeshBasicMaterial({ map: colorTexture });
-const mesh = new THREE.Mesh(geometry, material);
-scene.add(mesh);
 
+const material = new THREE.MeshBasicMaterial();
+
+const sphere = new THREE.Mesh(new THREE.SphereGeometry(0.5, 16, 16), material);
+sphere.position.x = -1.5;
+const plane = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), material);
+const torus = new THREE.Mesh(
+  new THREE.TorusGeometry(0.3, 0.2, 16, 32),
+  material
+);
+torus.position.x = 1.5;
+scene.add(sphere, plane, torus);
 /**
  * Sizes
  */
@@ -105,7 +61,7 @@ const camera = new THREE.PerspectiveCamera(
 );
 camera.position.x = 1;
 camera.position.y = 1;
-camera.position.z = 1;
+camera.position.z = 2;
 scene.add(camera);
 
 // Controls
@@ -129,6 +85,8 @@ const clock = new THREE.Clock();
 
 const tick = () => {
   const elapsedTime = clock.getElapsedTime();
+
+  // Update Object
 
   // Update controls
   controls.update();
