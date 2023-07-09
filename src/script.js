@@ -1,13 +1,16 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import * as dat from 'lil-gui';
 
 THREE.ColorManagement.enabled = false;
 
+const gui = new dat.GUI();
 /**
  * Textures
  */
 
 const textureLoader = new THREE.TextureLoader();
+const cubeTextureLoader = new THREE.CubeTextureLoader();
 
 const doorcolorTexture = textureLoader.load('textures/door/color.jpg');
 const dooralphaTexture = textureLoader.load('textures/door/alpha.jpg');
@@ -23,6 +26,16 @@ const gradientTexture = textureLoader.load('textures/gradients/3.jpg');
 gradientTexture.minFilter = THREE.NearestFilter;
 gradientTexture.magFilter = THREE.NearestFilter;
 gradientTexture.generateMipmaps = false;
+
+const environmentMapTexture = cubeTextureLoader.load([
+  '/textures/environmentMaps/0/px.jpg',
+  '/textures/environmentMaps/0/nx.jpg',
+  '/textures/environmentMaps/0/py.jpg',
+  '/textures/environmentMaps/0/ny.jpg',
+  '/textures/environmentMaps/0/pz.jpg',
+  '/textures/environmentMaps/0/nz.jpg',
+]);
+
 /**
  * Base
  */
@@ -62,15 +75,35 @@ const scene = new THREE.Scene();
 // const material = new THREE.MeshToonMaterial();
 // material.gradientMap = gradientTexture;
 
+// const material = new THREE.MeshStandardMaterial();
+// // material.metalness = 0.45;
+// // material.roughness = 0.65;
+// material.map = doorcolorTexture;
+// material.aoMap = doorambientOcclusionTexture;
+// material.aoMapIntensity = 10;
+// material.displacementMap = doorheightTexture;
+// material.displacementScale = 0.05;
+// material.metalnessMap = doormetalnessTexture;
+// material.roughnessMap = doorroughnessTexture;
+// material.normalMap = doornormalTexture;
+// material.normalScale.set(0.7, 0.7);
+// material.transparent = true;
+// material.alphaMap = dooralphaTexture;
+
 const material = new THREE.MeshStandardMaterial();
 material.metalness = 0.45;
-material.roughness = 1;
+material.roughness = 0.65;
+material.envMap = environmentMapTexture;
 
-const sphere = new THREE.Mesh(new THREE.SphereGeometry(0.5, 16, 16), material);
+gui.add(material, 'metalness').min(0).max(1).step(0.001);
+gui.add(material, 'roughness').min(0).max(1).step(0.001);
+gui.add(material, 'displacementScale').min(0).max(1).step(0.001);
+
+const sphere = new THREE.Mesh(new THREE.SphereGeometry(0.5, 64, 64), material);
 sphere.position.x = -1.5;
-const plane = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), material);
+const plane = new THREE.Mesh(new THREE.PlaneGeometry(1, 1, 100, 100), material);
 const torus = new THREE.Mesh(
-  new THREE.TorusGeometry(0.3, 0.2, 16, 32),
+  new THREE.TorusGeometry(0.3, 0.2, 64, 128),
   material
 );
 torus.position.x = 1.5;
