@@ -1,8 +1,7 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import * as dat from 'lil-gui';
-import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js';
-import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry.js';
+import { RectAreaLightHelper } from 'three/examples/jsm/helpers/RectAreaLightHelper.js';
 
 THREE.ColorManagement.enabled = false;
 
@@ -18,72 +17,107 @@ const canvas = document.querySelector('canvas.webgl');
 // Scene
 const scene = new THREE.Scene();
 
-// AxesHelper
-// const axesHelper = new THREE.AxesHelper();
-// scene.add(axesHelper);
-
 /**
- * Textures
+ * Lights
  */
-const textureLoader = new THREE.TextureLoader();
-const matcapTexture = textureLoader.load('/textures/matcaps/1.png');
 
-/**
- * Fonts
- */
-const fontLoader = new FontLoader();
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.02);
+scene.add(ambientLight);
 
-fontLoader.load('/fonts/helvetiker_regular.typeface.json', (font) => {
-  const textGeometry = new TextGeometry('Aman Sandhu.', {
-    font: font,
-    size: 0.5,
-    height: 0.2,
-    curveSegments: 5,
-    bevelEnabled: true,
-    bevelThickness: 0.03,
-    bevelSize: 0.02,
-    bevelOffset: 0,
-    bevelSegments: 4,
-  });
-  // textGeometry.computeBoundingBox();
-  // textGeometry.translate(
-  //   -(textGeometry.boundingBox.max.x - 0.02) * 0.5,
-  //   -(textGeometry.boundingBox.max.y - 0.02) * 0.5,
-  //   -(textGeometry.boundingBox.max.z - 0.03) * 0.5
-  // );
-  textGeometry.center();
+// const directionalLight = new THREE.DirectionalLight(0xff0000, 0.8);
+// directionalLight.position.set(1, 0.5, 0);
+// scene.add(directionalLight);
 
-  const material = new THREE.MeshMatcapMaterial({ matcap: matcapTexture });
-  const text = new THREE.Mesh(textGeometry, material);
-  scene.add(text);
+// const hemisphereLight = new THREE.HemisphereLight(0xff0000, 0x00ff00);
+// scene.add(hemisphereLight);
 
-  const donutGeometry = new THREE.TorusGeometry(0.3, 0.2, 20, 45);
+// const pointLight = new THREE.PointLight(0xff0000, 0.8, 15);
+// pointLight.position.x = 2;
+// pointLight.position.y = 3;
+// pointLight.position.z = 4;
+// scene.add(pointLight);
 
-  for (let i = 0; i < 100; i++) {
-    const donut = new THREE.Mesh(donutGeometry, material);
+// const rectLight = new THREE.RectAreaLight(0x4e00ff, 1, 2, 6);
+// rectLight.position.set(1, 1, 1);
+// rectLight.lookAt(new THREE.Vector3(0, 0, 0));
+// scene.add(rectLight);
 
-    donut.position.x = (Math.random() - 0.5) * 10;
-    donut.position.y = (Math.random() - 0.5) * 10;
-    donut.position.z = (Math.random() - 0.5) * 10;
+const spotLight = new THREE.SpotLight(0x4e04fe, 10, 10, Math.PI * 0.1, 0.25, 1);
+spotLight.position.set(0, 0, 0);
+scene.add(spotLight);
 
-    donut.rotation.x = Math.random() * Math.PI;
-    donut.rotation.y = Math.random() * Math.PI;
+// spotLight.target.position.x = -0.75;
+scene.add(spotLight.target);
 
-    const scale = Math.random();
-    donut.scale.set(scale, scale, scale);
-    scene.add(donut);
-  }
-});
+// Handle SpotLight with mouse movement
+const onMouseMove = function (event) {
+  const mouseX = (event.clientX / window.innerWidth) * 2 - 1;
+  const mouseY = -(event.clientY / window.innerHeight) * 2 + 1;
 
-/**
- * Object
- */
-// const cube = new THREE.Mesh(
-//   new THREE.BoxGeometry(1, 1, 1),
-//   new THREE.MeshBasicMaterial()
+  const mouseVector = new THREE.Vector3(mouseX, mouseY, 0.5);
+  mouseVector.unproject(camera);
+
+  const direction = mouseVector.sub(camera.position).normalize();
+  const distance = -camera.position.y / direction.y;
+  const targetPosition = camera.position
+    .clone()
+    .add(direction.multiplyScalar(distance));
+
+  spotLight.position.copy(targetPosition);
+};
+
+document.addEventListener('mousemove', onMouseMove, false);
+
+// LIGHT Helper
+
+// const hemisphereLightHelper = new THREE.HemisphereLightHelper(
+//   hemisphereLight,
+//   0.2
 // );
+// scene.add(hemisphereLightHelper);
 
-// scene.add(cube);
+// const directionalLightHelper = new THREE.DirectionalLightHelper(
+//   directionalLight,
+//   0.2
+// );
+// scene.add(directionalLightHelper);
+
+// const pointLightHelper = new THREE.PointLightHelper(pointLight, 0.2);
+// scene.add(pointLightHelper);
+
+// const spotLightHelper = new THREE.SpotLightHelper(spotLight);
+// scene.add(spotLightHelper);
+// window.requestAnimationFrame(() => {
+//   spotLightHelper.update();
+// });
+
+// const rectAreaLightHelper = new RectAreaLightHelper(rectLight);
+// scene.add(rectAreaLightHelper);
+
+/**
+ * Objects
+ */
+// Material
+const material = new THREE.MeshStandardMaterial();
+material.roughness = 0.4;
+
+// Objects
+const sphere = new THREE.Mesh(new THREE.SphereGeometry(0.5, 32, 32), material);
+sphere.position.x = -1.5;
+
+const cube = new THREE.Mesh(new THREE.BoxGeometry(0.75, 0.75, 0.75), material);
+
+const torus = new THREE.Mesh(
+  new THREE.TorusGeometry(0.3, 0.2, 32, 64),
+  material
+);
+torus.position.x = 1.5;
+
+const plane = new THREE.Mesh(new THREE.PlaneGeometry(5, 5), material);
+plane.rotation.x = -Math.PI * 0.5;
+plane.position.y = -0.65;
+
+scene.add(sphere, cube, torus, plane);
 
 /**
  * Sizes
@@ -119,7 +153,7 @@ const camera = new THREE.PerspectiveCamera(
 );
 camera.position.x = 1;
 camera.position.y = 1;
-camera.position.z = 2;
+camera.position.z = 5;
 scene.add(camera);
 
 // Controls
@@ -143,6 +177,15 @@ const clock = new THREE.Clock();
 
 const tick = () => {
   const elapsedTime = clock.getElapsedTime();
+
+  // Update objects
+  sphere.rotation.y = 0.1 * elapsedTime;
+  cube.rotation.y = 0.1 * elapsedTime;
+  torus.rotation.y = 0.1 * elapsedTime;
+
+  sphere.rotation.x = 0.15 * elapsedTime;
+  cube.rotation.x = 0.15 * elapsedTime;
+  torus.rotation.x = 0.15 * elapsedTime;
 
   // Update controls
   controls.update();
