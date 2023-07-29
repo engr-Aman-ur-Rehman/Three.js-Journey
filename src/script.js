@@ -22,10 +22,36 @@ const scene = new THREE.Scene();
 
 const parameters = {};
 parameters.count = 1000;
+parameters.size = 0.02;
 
 const generateGalaxy = () => {
-  const geometery = new THREEBuffer();
+  const geometery = new THREE.BufferGeometry();
+
+  const position = new Float32Array(parameters.count * 3);
+
+  for (let i = 0; i < parameters.count; i++) {
+    const i3 = i * 3;
+
+    position[i3 + 1] = (Math.random() - 0.5) * 3;
+    position[i3 + 0] = (Math.random() - 0.5) * 3;
+    position[i3 + 2] = (Math.random() - 0.5) * 3;
+  }
+
+  geometery.setAttribute('position', new THREE.BufferAttribute(position, 3));
+
+  // Materiales
+  const material = new THREE.PointsMaterial({
+    size: parameters.size,
+    sizeAttenuation: true,
+    depthWrite: false,
+    blending: THREE.AdditiveBlending,
+  });
+
+  // Points
+  const points = new THREE.Points(geometery, material);
+  scene.add(points);
 };
+
 generateGalaxy();
 
 /**
