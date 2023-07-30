@@ -16,6 +16,7 @@ const canvas = document.querySelector('canvas.webgl');
 // Scene
 const scene = new THREE.Scene();
 
+
 /**
  * Galaxy
  */
@@ -152,6 +153,63 @@ gui.addColor(parameters, 'outsideColor').onFinishChange(generateGalaxy);
 generateGalaxy();
 
 /**
+=======
+/**
+ * Textures
+ */
+const textureLoader = new THREE.TextureLoader();
+const particleTexture = textureLoader.load('/textures/particles/2.png');
+
+/**
+ * Particles
+ */
+
+// Geometery
+const particlesGeometery = new THREE.BufferGeometry();
+const count = 5000;
+
+const positions = new Float32Array(count * 3);
+const colors = new Float32Array(count * 3);
+
+for (let i = 0; i < count * 3; i++) {
+  positions[i] = (Math.random() - 0.5) * 10;
+  colors[i] = Math.random();
+}
+
+particlesGeometery.setAttribute(
+  'position',
+  new THREE.BufferAttribute(positions, 3)
+);
+particlesGeometery.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+// Material
+const particlesMaterial = new THREE.PointsMaterial();
+particlesMaterial.size = 0.2;
+particlesMaterial.sizeAttenuation = true;
+// particlesMaterial.color = new THREE.Color('#ff88cc');
+particlesMaterial.transparent = true;
+particlesMaterial.alphaMap = particleTexture;
+// particlesMaterial.alphaTest = 0.001
+// particlesMaterial.depthTest = false;
+particlesMaterial.depthWrite = false;
+particlesMaterial.blending = THREE.AdditiveBlending;
+// Points
+const particles = new THREE.Points(particlesGeometery, particlesMaterial);
+particlesMaterial.vertexColors = true;
+
+scene.add(particles);
+
+/**
+ * Test cube
+ */
+// const cube = new THREE.Mesh(
+//   new THREE.BoxGeometry(1, 1, 1),
+//   new THREE.MeshBasicMaterial()
+// );
+// scene.add(cube);
+
+/**
+
  * Sizes
  */
 const sizes = {
@@ -183,8 +241,11 @@ const camera = new THREE.PerspectiveCamera(
   0.1,
   100
 );
+
 camera.position.x = 3;
 camera.position.y = 3;
+=======
+
 camera.position.z = 3;
 scene.add(camera);
 
@@ -209,6 +270,19 @@ const clock = new THREE.Clock();
 
 const tick = () => {
   const elapsedTime = clock.getElapsedTime();
+
+
+
+  // for (let i = 0; i < count; i++) {
+  //   let i3 = i * 3;
+
+  //   const x = particlesGeometery.attributes.position.array[i3];
+  //   particlesGeometery.attributes.position.array[i3 + 1] = Math.sin(
+  //     elapsedTime + x
+  //   );
+  // }
+  // particlesGeometery.attributes.position.needsUpdate = true;
+
 
   // Update controls
   controls.update();
