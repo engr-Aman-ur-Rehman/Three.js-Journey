@@ -29,7 +29,9 @@ const gltfLoader = new GLTFLoader();
 
 gltfLoader.setDRACOLoader(dracoLoader);
 
-gltfLoader.load('/models/Duck/glTF-Draco/Duck.gltf', (gltf) => {
+let mixer = null;
+
+gltfLoader.load('/models/Fox/glTF/Fox.gltf', (gltf) => {
   // scene.add(gltf.scene.children[0]);
 
   //When there were multiple meshes in GLTF models
@@ -40,7 +42,13 @@ gltfLoader.load('/models/Duck/glTF-Draco/Duck.gltf', (gltf) => {
   }
   */
 
-  // Another way
+  // Animation
+  mixer = new THREE.AnimationMixer(gltf.scene);
+  const action = mixer.clipAction(gltf.animations[2]);
+
+  action.play();
+
+  gltf.scene.scale.set(0.025, 0.025, 0.025);
   scene.add(gltf.scene);
 });
 
@@ -138,6 +146,11 @@ const tick = () => {
   const elapsedTime = clock.getElapsedTime();
   const deltaTime = elapsedTime - previousTime;
   previousTime = elapsedTime;
+
+  // Update Mixer
+  if (mixer !== null) {
+    mixer.update(deltaTime);
+  }
 
   // Update controls
   controls.update();
