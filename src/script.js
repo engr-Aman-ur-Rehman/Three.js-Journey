@@ -2,6 +2,8 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import * as dat from 'lil-gui';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader';
+
 THREE.ColorManagement.enabled = false;
 
 /**
@@ -16,9 +18,18 @@ const canvas = document.querySelector('canvas.webgl');
 // Scene
 const scene = new THREE.Scene();
 
+/**
+ * Models
+ */
+
+const dracoLoader = new DRACOLoader();
+dracoLoader.setDecoderPath('/draco/');
+
 const gltfLoader = new GLTFLoader();
 
-gltfLoader.load('/models/FlightHelmet/glTF/FlightHelmet.gltf', (gltf) => {
+gltfLoader.setDRACOLoader(dracoLoader);
+
+gltfLoader.load('/models/Duck/glTF-Draco/Duck.gltf', (gltf) => {
   // scene.add(gltf.scene.children[0]);
 
   //When there were multiple meshes in GLTF models
@@ -32,9 +43,6 @@ gltfLoader.load('/models/FlightHelmet/glTF/FlightHelmet.gltf', (gltf) => {
   // Another way
   scene.add(gltf.scene);
 });
-/**
- * Models
- */
 
 /**
  * Floor
