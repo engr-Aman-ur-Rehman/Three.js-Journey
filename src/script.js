@@ -115,7 +115,7 @@ const tick = () => {
 
   const objectToTest = [object1, object2, object3];
   const intersects = raycaster.intersectObjects(objectToTest);
-  console.log(intersects.length);
+  // console.log(intersects.length);
 
   // Update controls
   controls.update();
