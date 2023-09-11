@@ -39,6 +39,12 @@ object3.position.x = 2;
 scene.add(object1, object2, object3);
 
 /**
+ * Raycaster
+ */
+
+const raycaster = new THREE.Raycaster();
+
+/**
  * Sizes
  */
 const sizes = {
@@ -94,6 +100,22 @@ const clock = new THREE.Clock();
 
 const tick = () => {
   const elapsedTime = clock.getElapsedTime();
+
+  // Animate Object
+  object1.position.y = Math.sin(elapsedTime);
+  object2.position.y = Math.sin(elapsedTime * 0.5);
+  object3.position.y = Math.sin(elapsedTime * 1.3) * 1.2;
+
+  // Cast a ray
+  const rayOrigin = new THREE.Vector3(-3, 0, 0);
+  const rayDirection = new THREE.Vector3(1, 0, 0);
+  rayDirection.normalize();
+
+  raycaster.set(rayOrigin, rayDirection);
+
+  const objectToTest = [object1, object2, object3];
+  const intersects = raycaster.intersectObjects(objectToTest);
+  console.log(intersects.length);
 
   // Update controls
   controls.update();
