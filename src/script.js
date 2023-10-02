@@ -4,6 +4,7 @@ import * as dat from 'lil-gui';
 
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js';
+import { EXRLoader } from 'three/examples/jsm/loaders/EXRLoader.js';
 
 /**
  * Loaders
@@ -12,6 +13,7 @@ import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js';
 const gltfLoader = new GLTFLoader();
 const cubeTextureLoader = new THREE.CubeTextureLoader();
 const rgbeLoader = new RGBELoader();
+const exrLoader = new EXRLoader();
 
 /**
  * Base
@@ -70,12 +72,21 @@ gui
 // scene.background = environmentMap;
 
 // HDR (RGBE) euuirectangular
-rgbeLoader.load('/environmentMaps/0/2k.hdr', (environmentMap) => {
+// rgbeLoader.load('/environmentMaps/0/2k.hdr', (environmentMap) => {
+//   environmentMap.mapping = THREE.EquirectangularReflectionMapping;
+
+//   scene.background = environmentMap;
+//   scene.environment = environmentMap;
+// });
+
+// HDR (EXR) euuirectangular
+exrLoader.load('/environmentMaps/nvidiaCanvas-4k.exr', (environmentMap) => {
   environmentMap.mapping = THREE.EquirectangularReflectionMapping;
 
   scene.background = environmentMap;
   scene.environment = environmentMap;
 });
+
 /**
  * Torus Knot
  */
