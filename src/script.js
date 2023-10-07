@@ -6,6 +6,10 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js';
 import { EXRLoader } from 'three/examples/jsm/loaders/EXRLoader.js';
 
+// import { GroundProjectedSkybox } from 'three/addons/objects/GroundProjectedSkybox.js';
+
+// import { GroundProjectedSkybox } from 'three/examples/jsm/objects/GroundProjectedSkybox.js';
+
 /**
  * Loaders
  */
@@ -89,14 +93,42 @@ gui
 // });
 
 // LDR equirectangular
+// const environmentMap = textureLoader.load(
+//   '/environmentMaps/blockadesLabsSkybox/anime_art_style_japan_streets_with_cherry_blossom_.jpg',
+//   (environmentMap) => {
+//     environmentMap.mapping = THREE.EquirectangularReflectionMapping;
+//     environmentMap.colorSpace = THREE.SRGBColorSpace;
+
+//     scene.background = environmentMap;
+//     scene.environment = environmentMap;
+//   }
+// );
+
+//Ground projected skybox
+
+// rgbeLoader.load('/environmentMaps/2/2k.hdr', (environmentMap) => {
+//   environmentMap.mapping = THREE.EquirectangularReflectionMapping;
+//   scene.environment = environmentMap;
+
+//   // Skybox
+//   const skybox = new GroundProjectedSkybox(environmentMap);
+//   skybox.scale.setScalar(50);
+
+//   gui.add(skybox, 'radius', 1, 200, 0.1).name('skyboxRadius');
+//   gui.add(skybox, 'height', 1, 100, 0.1).name('skyboxHeight');
+
+//   scene.add(skybox);
+// });
+
+// Real time Environment Map.
+
 const environmentMap = textureLoader.load(
-  '/environmentMaps/blockadesLabsSkybox/anime_art_style_japan_streets_with_cherry_blossom_.jpg',
+  '/environmentMaps/blockadesLabsSkybox/digital_painting_neon_city_night_orange_lights_.jpg',
   (environmentMap) => {
     environmentMap.mapping = THREE.EquirectangularReflectionMapping;
     environmentMap.colorSpace = THREE.SRGBColorSpace;
 
     scene.background = environmentMap;
-    scene.environment = environmentMap;
   }
 );
 
@@ -115,6 +147,21 @@ torusKnot.position.y = 4;
 torusKnot.position.x = -4;
 scene.add(torusKnot);
 
+// Holy donut
+const holyDonut = new THREE.Mesh(
+  new THREE.TorusGeometry(8, 0.5),
+  new THREE.MeshBasicMaterial({ color: new THREE.Color(10, 20, 40) })
+);
+holyDonut.layers.enable(1);
+holyDonut.position.y = 3.5;
+scene.add(holyDonut);
+
+// Cube render target
+const cubeRenderTarget = new THREE.WebGLCubeRenderTarget(256, {
+  type: THREE.HalfFloatType,
+});
+
+scene.environment = cubeRenderTarget.texture;
 /**
  * Models
  */
@@ -160,6 +207,10 @@ const camera = new THREE.PerspectiveCamera(
 camera.position.set(4, 5, 4);
 scene.add(camera);
 
+// Cube camera
+const cubeCamera = new THREE.CubeCamera(0.1, 100, cubeRenderTarget);
+cubeCamera.layers.set(1);
+
 // Controls
 const controls = new OrbitControls(camera, canvas);
 controls.target.y = 3.5;
@@ -181,6 +232,12 @@ const clock = new THREE.Clock();
 const tick = () => {
   // Time
   const elapsedTime = clock.getElapsedTime();
+
+  // Real time environment map
+  if (holyDonut) {
+    holyDonut.rotation.x = Math.sin(elapsedTime) * 2;
+    cubeCamera.update(renderer, scene);
+  }
 
   // Update controls
   controls.update();
