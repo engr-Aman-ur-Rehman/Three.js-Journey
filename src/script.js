@@ -1,10 +1,24 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
 import * as dat from 'lil-gui';
 
-THREE.ColorManagement.enabled = false;
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js';
+import { EXRLoader } from 'three/examples/jsm/loaders/EXRLoader.js';
+
+// import { GroundProjectedSkybox } from 'three/addons/objects/GroundProjectedSkybox.js';
+
+// import { GroundProjectedSkybox } from 'three/examples/jsm/objects/GroundProjectedSkybox.js';
+
+/**
+ * Loaders
+ */
+
+const gltfLoader = new GLTFLoader();
+const cubeTextureLoader = new THREE.CubeTextureLoader();
+const rgbeLoader = new RGBELoader();
+const exrLoader = new EXRLoader();
+const textureLoader = new THREE.TextureLoader();
 
 /**
  * Base
@@ -19,52 +33,145 @@ const canvas = document.querySelector('canvas.webgl');
 const scene = new THREE.Scene();
 
 /**
- * Models
+ * Update All Materials
  */
-const dracoLoader = new DRACOLoader();
-dracoLoader.setDecoderPath('/draco/');
+const global = {};
 
-const gltfLoader = new GLTFLoader();
-gltfLoader.setDRACOLoader(dracoLoader);
-
-let mixer = null;
-
-gltfLoader.load('/models/hamburger.glb', (gltf) => {
-  scene.add(gltf.scene);
-});
+const updateAllMaterials = () => {
+  scene.traverse((child) => {
+    if (child.isMesh && child.material.isMeshStandardMaterial) {
+      child.material.envMapIntensity = global.envMapIntensity;
+    }
+  });
+};
 
 /**
- * Floor
+ *Environment Map
  */
-const floor = new THREE.Mesh(
-  new THREE.PlaneGeometry(50, 50),
+
+scene.backgroundBlurriness = 0;
+scene.backgroundIntensity = 1;
+
+gui.add(scene, 'backgroundBlurriness').min(0).max(1).step(0.001);
+gui.add(scene, 'backgroundIntensity').min(0).max(10).step(0.01);
+
+// Global intensity
+global.envMapIntensity = 1;
+gui
+  .add(global, 'envMapIntensity')
+  .min(0)
+  .max(10)
+  .step(0.001)
+  .onChange(updateAllMaterials);
+
+//LDR Cube Texture
+// const environmentMap = cubeTextureLoader.load([
+//   '/environmentMaps/0/px.png',
+//   '/environmentMaps/0/nx.png',
+//   '/environmentMaps/0/py.png',
+//   '/environmentMaps/0/ny.png',
+//   '/environmentMaps/0/pz.png',
+//   '/environmentMaps/0/nz.png',
+// ]);
+// scene.environment = environmentMap;
+// scene.background = environmentMap;
+
+// HDR (RGBE) euuirectangular
+// rgbeLoader.load('/environmentMaps/0/2k.hdr', (environmentMap) => {
+//   environmentMap.mapping = THREE.EquirectangularReflectionMapping;
+
+//   scene.background = environmentMap;
+//   scene.environment = environmentMap;
+// });
+
+// HDR (EXR) equirectangular
+// exrLoader.load('/environmentMaps/nvidiaCanvas-4k.exr', (environmentMap) => {
+//   environmentMap.mapping = THREE.EquirectangularReflectionMapping;
+
+//   scene.background = environmentMap;
+//   scene.environment = environmentMap;
+// });
+
+// LDR equirectangular
+// const environmentMap = textureLoader.load(
+//   '/environmentMaps/blockadesLabsSkybox/anime_art_style_japan_streets_with_cherry_blossom_.jpg',
+//   (environmentMap) => {
+//     environmentMap.mapping = THREE.EquirectangularReflectionMapping;
+//     environmentMap.colorSpace = THREE.SRGBColorSpace;
+
+//     scene.background = environmentMap;
+//     scene.environment = environmentMap;
+//   }
+// );
+
+//Ground projected skybox
+
+// rgbeLoader.load('/environmentMaps/2/2k.hdr', (environmentMap) => {
+//   environmentMap.mapping = THREE.EquirectangularReflectionMapping;
+//   scene.environment = environmentMap;
+
+//   // Skybox
+//   const skybox = new GroundProjectedSkybox(environmentMap);
+//   skybox.scale.setScalar(50);
+
+//   gui.add(skybox, 'radius', 1, 200, 0.1).name('skyboxRadius');
+//   gui.add(skybox, 'height', 1, 100, 0.1).name('skyboxHeight');
+
+//   scene.add(skybox);
+// });
+
+// Real time Environment Map.
+
+const environmentMap = textureLoader.load(
+  '/environmentMaps/blockadesLabsSkybox/digital_painting_neon_city_night_orange_lights_.jpg',
+  (environmentMap) => {
+    environmentMap.mapping = THREE.EquirectangularReflectionMapping;
+    environmentMap.colorSpace = THREE.SRGBColorSpace;
+
+    scene.background = environmentMap;
+  }
+);
+
+/**
+ * Torus Knot
+ */
+const torusKnot = new THREE.Mesh(
+  new THREE.TorusKnotGeometry(1, 0.4, 100, 16),
   new THREE.MeshStandardMaterial({
-    color: '#444444',
-    metalness: 0,
-    roughness: 0.5,
+    roughness: 0.3,
+    metalness: 1,
+    color: 0xaaaaaa,
   })
 );
-floor.receiveShadow = true;
-floor.rotation.x = -Math.PI * 0.5;
-scene.add(floor);
+torusKnot.position.y = 4;
+torusKnot.position.x = -4;
+scene.add(torusKnot);
 
+// Holy donut
+const holyDonut = new THREE.Mesh(
+  new THREE.TorusGeometry(8, 0.5),
+  new THREE.MeshBasicMaterial({ color: new THREE.Color(10, 20, 40) })
+);
+holyDonut.layers.enable(1);
+holyDonut.position.y = 3.5;
+scene.add(holyDonut);
+
+// Cube render target
+const cubeRenderTarget = new THREE.WebGLCubeRenderTarget(256, {
+  type: THREE.HalfFloatType,
+});
+
+scene.environment = cubeRenderTarget.texture;
 /**
- * Lights
+ * Models
  */
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
-scene.add(ambientLight);
 
-const directionalLight = new THREE.DirectionalLight(0xffffff, 0.6);
-directionalLight.castShadow = true;
-directionalLight.shadow.mapSize.set(1024, 1024);
-directionalLight.shadow.camera.far = 15;
-directionalLight.shadow.camera.left = -7;
-directionalLight.shadow.camera.top = 7;
-directionalLight.shadow.camera.right = 7;
-directionalLight.shadow.camera.bottom = -7;
-directionalLight.position.set(5, 5, 5);
-scene.add(directionalLight);
+gltfLoader.load('/models/FlightHelmet/glTF/FlightHelmet.gltf', (gltf) => {
+  gltf.scene.scale.set(10, 10, 10);
+  scene.add(gltf.scene);
 
+  updateAllMaterials();
+});
 /**
  * Sizes
  */
@@ -97,12 +204,16 @@ const camera = new THREE.PerspectiveCamera(
   0.1,
   100
 );
-camera.position.set(-8, 4, 8);
+camera.position.set(4, 5, 4);
 scene.add(camera);
+
+// Cube camera
+const cubeCamera = new THREE.CubeCamera(0.1, 100, cubeRenderTarget);
+cubeCamera.layers.set(1);
 
 // Controls
 const controls = new OrbitControls(camera, canvas);
-controls.target.set(0, 1, 0);
+controls.target.y = 3.5;
 controls.enableDamping = true;
 
 /**
@@ -111,9 +222,6 @@ controls.enableDamping = true;
 const renderer = new THREE.WebGLRenderer({
   canvas: canvas,
 });
-renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
-renderer.shadowMap.enabled = true;
-renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.setSize(sizes.width, sizes.height);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
@@ -121,15 +229,14 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
  * Animate
  */
 const clock = new THREE.Clock();
-let previousTime = 0;
-
 const tick = () => {
+  // Time
   const elapsedTime = clock.getElapsedTime();
-  const deltaTime = elapsedTime - previousTime;
-  previousTime = elapsedTime;
 
-  if (mixer) {
-    mixer.update(deltaTime);
+  // Real time environment map
+  if (holyDonut) {
+    holyDonut.rotation.x = Math.sin(elapsedTime) * 2;
+    cubeCamera.update(renderer, scene);
   }
 
   // Update controls
