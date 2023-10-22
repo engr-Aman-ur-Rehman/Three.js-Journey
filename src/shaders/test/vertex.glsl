@@ -4,10 +4,14 @@
         uniform vec2 uFrequency;
         uniform float uTime;
         uniform vec3 uColor;
-        
+
         attribute vec3 position;
 
         attribute float aRandom;
+
+        attribute vec2 uv;
+
+        varying vec2 vUv;
 
         // varying float vRandom;
 
@@ -24,4 +28,6 @@
     gl_Position = projectedPosition;
 
     // vRandom = aRandom;
+
+    vUv = uv;
 }
