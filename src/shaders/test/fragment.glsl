@@ -90,6 +90,7 @@ void main()
     // Pattern 11
     // float strength = step(0.8, mod(vUv.x * 10.0, 1.0));
     // strength += step(0.8, mod(vUv.y * 10.0, 1.0));
+    // strength = clamp(strength, 0.0, 1.0);
     
     // Pattern 12
     // float strength = step(0.8, mod(vUv.x * 10.0, 1.0));
@@ -107,11 +108,13 @@ void main()
     // float barX = step(0.4, mod(vUv.x * 10.0, 1.0)) * step(0.8, mod(vUv.y * 10.0, 1.0));
     // float barY = step(0.8, mod(vUv.x * 10.0, 1.0)) * step(0.4, mod(vUv.y * 10.0, 1.0));
     // float strength = barX + barY;
+    // strength = clamp(strength, 0.0, 1.0);
 
     // Pattern 15
-    //  float barX = step(0.4, mod(vUv.x * 10.0 - 0.2, 1.0)) * step(0.8, mod(vUv.y * 10.0, 1.0));
+    // float barX = step(0.4, mod(vUv.x * 10.0 - 0.2, 1.0)) * step(0.8, mod(vUv.y * 10.0, 1.0));
     // float barY = step(0.8, mod(vUv.x * 10.0, 1.0)) * step(0.4, mod(vUv.y * 10.0 - 0.2, 1.0));
     // float strength = barX + barY;
+    // strength = clamp(strength, 0.0, 1.0);
 
     // Pattern 16
     // float strength = abs(vUv.x - 0.5);
@@ -271,7 +274,7 @@ void main()
     // float strength = 1.0 - step(0.02, abs(distance(vUv, vec2(0.5)) - radius));
 
     //  Pattern 46
-     float strength = cnoise(vUv * 10.0);
+    //  float strength = cnoise(vUv * 10.0);
 
     // Pattern 47
     // float strength = step(0.0, cnoise(vUv * 10.0));
@@ -282,24 +285,18 @@ void main()
     // Pattern 49
     // float strength = sin(cnoise(vUv * 10.0) * 20.0);
 
+    // Pattern 50
+    float strength = step(0.9, sin(cnoise(vUv * 10.0) * 20.0));
 
+    // Grey Version
+    // gl_FragColor = vec4(vec3(strength), 1.0);
 
+    // Colored Version
+    vec3 blackColor = vec3(0.0);
+    vec3 uvColor = vec3(vUv, 1.0);
 
+    vec3 mixedColor = mix(blackColor, uvColor, strength);
 
+    gl_FragColor = vec4(mixedColor, 1.0);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    gl_FragColor = vec4(vec3(strength), 1.0);
 }
