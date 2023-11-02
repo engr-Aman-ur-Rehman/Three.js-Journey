@@ -111,7 +111,7 @@ const generateGalaxy = () => {
     vertexShader: galaxyVertexShader,
     fragmentShader: galaxyFragmentShader,
     uniforms: {
-      uSize: { value: 8 },
+      uSize: { value: 8 * renderer.getPixelRatio() },
     },
   });
 
@@ -121,8 +121,6 @@ const generateGalaxy = () => {
   points = new THREE.Points(geometry, material);
   scene.add(points);
 };
-
-generateGalaxy();
 
 gui
   .add(parameters, 'count')
@@ -226,4 +224,5 @@ const tick = () => {
   window.requestAnimationFrame(tick);
 };
 
+generateGalaxy();
 tick();
