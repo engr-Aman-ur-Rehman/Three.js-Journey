@@ -50,6 +50,7 @@ const generateGalaxy = () => {
   geometry = new THREE.BufferGeometry();
 
   const positions = new Float32Array(parameters.count * 3);
+  const randomness = new Float32Array(parameters.count * 3);
   const colors = new Float32Array(parameters.count * 3);
   const scales = new Float32Array(parameters.count * 1);
 
@@ -81,9 +82,13 @@ const generateGalaxy = () => {
       parameters.randomness *
       radius;
 
-    positions[i3] = Math.cos(branchAngle) * radius + randomX;
-    positions[i3 + 1] = randomY;
-    positions[i3 + 2] = Math.sin(branchAngle) * radius + randomZ;
+    positions[i3] = Math.cos(branchAngle) * radius;
+    positions[i3 + 1] = 0;
+    positions[i3 + 2] = Math.sin(branchAngle) * radius;
+
+    randomness[i3] = randomX;
+    randomness[i3 + 1] = randomY;
+    randomness[i3 + 2] = randomZ;
 
     // Color
     const mixedColor = insideColor.clone();
@@ -98,6 +103,10 @@ const generateGalaxy = () => {
   }
 
   geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  geometry.setAttribute(
+    'aRandomness',
+    new THREE.BufferAttribute(randomness, 3)
+  );
   geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
   geometry.setAttribute('aScale', new THREE.BufferAttribute(scales, 1));
 
@@ -111,6 +120,7 @@ const generateGalaxy = () => {
     vertexShader: galaxyVertexShader,
     fragmentShader: galaxyFragmentShader,
     uniforms: {
+      uTime: { value: 0 },
       uSize: { value: 8 * renderer.getPixelRatio() },
     },
   });
@@ -213,6 +223,9 @@ const clock = new THREE.Clock();
 
 const tick = () => {
   const elapsedTime = clock.getElapsedTime();
+
+  // Update material
+  material.uniforms.uTime.value = elapsedTime;
 
   // Update controls
   controls.update();
