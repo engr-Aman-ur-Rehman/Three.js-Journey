@@ -1,6 +1,8 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 import GUI from 'lil-gui';
 
 /**
@@ -128,6 +130,13 @@ renderer.toneMapping = THREE.ReinhardToneMapping;
 renderer.toneMappingExposure = 1.5;
 renderer.setSize(sizes.width, sizes.height);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+/**
+ * Post processing
+ */
+const effectComposer = new EffectComposer(renderer);
+effectComposer.setSize(sizes.width, sizes.height);
+effectComposer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
 /**
  * Animate
