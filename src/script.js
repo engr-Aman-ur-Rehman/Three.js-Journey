@@ -138,6 +138,9 @@ const effectComposer = new EffectComposer(renderer);
 effectComposer.setSize(sizes.width, sizes.height);
 effectComposer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
+const renderPass = new RenderPass(scene, camera);
+effectComposer.addPass(renderPass);
+
 /**
  * Animate
  */
@@ -150,7 +153,9 @@ const tick = () => {
   controls.update();
 
   // Render
-  renderer.render(scene, camera);
+  // renderer.render(scene, camera);
+
+  effectComposer.render();
 
   // Call tick again on the next frame
   window.requestAnimationFrame(tick);
