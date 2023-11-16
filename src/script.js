@@ -8,6 +8,7 @@ import { GlitchPass } from 'three/examples/jsm/postprocessing/GlitchPass.js';
 import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js';
 import { RGBShiftShader } from 'three/examples/jsm/shaders/RGBShiftShader.js';
 import { GammaCorrectionShader } from 'three/examples/jsm/shaders/GammaCorrectionShader.js';
+import { SMAAPass } from 'three/examples/jsm/postprocessing/SMAAPass.js';
 import GUI from 'lil-gui';
 
 /**
@@ -143,10 +144,18 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 /**
  * Post processing
  */
-const effectComposer = new EffectComposer(renderer);
+
+// Render target
+const renderTarget = new THREE.WebGLRenderTarget(800, 600, {
+  samples: renderer.getPixelRatio() === 1 ? 2 : 0,
+});
+
+// Effect composser
+const effectComposer = new EffectComposer(renderer, renderTarget);
 effectComposer.setSize(sizes.width, sizes.height);
 effectComposer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
+// Rander pass
 const renderPass = new RenderPass(scene, camera);
 effectComposer.addPass(renderPass);
 
@@ -155,15 +164,22 @@ dotScreenPass.enabled = false;
 effectComposer.addPass(dotScreenPass);
 
 const glitchPass = new GlitchPass();
-glitchPass.goWild = true;
-glitchPass.enabled = false;
+glitchPass.goWild = false;
+glitchPass.enabled = true;
 effectComposer.addPass(glitchPass);
 
 const rgbShiftPass = new ShaderPass(RGBShiftShader);
 effectComposer.addPass(rgbShiftPass);
 
-const gammaCorrectionPass = new ShaderPass(GammaCorrectionShader);
-effectComposer.addPass(gammaCorrectionPass);
+// const gammaCorrectionPass = new ShaderPass(GammaCorrectionShader);
+// effectComposer.addPass(gammaCorrectionPass);
+
+if (renderer.getPixelRatio() === 1 && !renderer.capabilities.isWebGL2) {
+  const smaaPass = new SMAAPass();
+  effectComposer.addPass(smaaPass);
+
+  console.log('Using SMAA');
+}
 
 /**
  * Animate
