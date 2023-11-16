@@ -184,6 +184,7 @@ gui.add(unrealBloomPass, 'strength').min(0).max(2).step(0.001);
 gui.add(unrealBloomPass, 'radius').min(0).max(2).step(0.001);
 gui.add(unrealBloomPass, 'threshold').min(0).max(1).step(0.001);
 
+// Tint Pass
 const TintShader = {
   uniforms: {
     tDiffuse: { value: null },
@@ -238,6 +239,45 @@ gui
   .step(0.001)
   .name('blue');
 
+// Displacement pass
+const DisplacementShader = {
+  uniforms: {
+    tDiffuse: { value: null },
+    uTime: { value: null },
+  },
+  vertexShader: `
+        varying vec2 vUv;
+
+        void main()
+        {
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+
+            vUv = uv;
+        }
+    `,
+  fragmentShader: `
+    uniform sampler2D tDiffuse;
+    uniform float uTime;
+
+    varying vec2 vUv;
+
+    void main()
+    {
+        vec2 newUv = vec2(
+            vUv.x,
+            vUv.y + sin(vUv.x * 10.0 + uTime) * 0.1
+        );
+        vec4 color = texture2D(tDiffuse, newUv);
+
+        gl_FragColor = color;
+    }
+`,
+};
+
+const displacementPass = new ShaderPass(DisplacementShader);
+displacementPass.material.uniforms.uTime.value = 0;
+effectComposer.addPass(displacementPass);
+
 // const gammaCorrectionPass = new ShaderPass(GammaCorrectionShader);
 // effectComposer.addPass(gammaCorrectionPass);
 
@@ -255,6 +295,9 @@ const clock = new THREE.Clock();
 
 const tick = () => {
   const elapsedTime = clock.getElapsedTime();
+
+  // Update passes
+  displacementPass.material.uniforms.uTime.value = elapsedTime;
 
   // Update controls
   controls.update();
