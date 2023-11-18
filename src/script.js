@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import Stats from 'stats.js';
+import * as BufferGeometryUtils from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 
 /**
  * Stats
@@ -176,27 +177,30 @@ console.log(renderer.info);
 // const cameraHelper = new THREE.CameraHelper(directionalLight.shadow.camera)
 // scene.add(cameraHelper)
 
-// // Tip 11
-// cube.castShadow = true
-// cube.receiveShadow = false
+// Tip 11
+cube.castShadow = true;
+cube.receiveShadow = false;
 
-// torusKnot.castShadow = true
-// torusKnot.receiveShadow = false
+torusKnot.castShadow = true;
+torusKnot.receiveShadow = false;
 
-// sphere.castShadow = true
-// sphere.receiveShadow = false
+sphere.castShadow = true;
+sphere.receiveShadow = false;
 
-// floor.castShadow = false
-// floor.receiveShadow = true
+floor.castShadow = false;
+floor.receiveShadow = true;
 
-// // Tip 12
-// renderer.shadowMap.autoUpdate = false
-// renderer.shadowMap.needsUpdate = true
+// Tip 12
+renderer.shadowMap.autoUpdate = false;
+renderer.shadowMap.needsUpdate = true;
 
 // // Tip 18
+
+// const geometry = new THREE.BoxGeometry(0.5, 0.5, 0.5)
+
 // for(let i = 0; i < 50; i++)
 // {
-//     const geometry = new THREE.BoxGeometry(0.5, 0.5, 0.5)
+//
 
 //     const material = new THREE.MeshNormalMaterial()
 
@@ -209,6 +213,31 @@ console.log(renderer.info);
 
 //     scene.add(mesh)
 // }
+
+// Tip 18 Part B
+const geometries = [];
+for (let i = 0; i < 50; i++) {
+  const geometry = new THREE.BoxGeometry(0.5, 0.5, 0.5);
+
+  geometry.rotateX((Math.random() - 0.5) * Math.PI * 2);
+  geometry.rotateY((Math.random() - 0.5) * Math.PI * 2);
+
+  geometry.translate(
+    (Math.random() - 0.5) * 10,
+    (Math.random() - 0.5) * 10,
+    (Math.random() - 0.5) * 10
+  );
+
+  geometries.push(geometry);
+}
+
+const mergedGeometry = BufferGeometryUtils.mergeBufferGeometries(geometries);
+console.log(mergedGeometry);
+
+const material = new THREE.MeshNormalMaterial();
+
+const mesh = new THREE.Mesh(mergedGeometry, material);
+scene.add(mesh);
 
 // // Tip 19
 // for(let i = 0; i < 50; i++)
