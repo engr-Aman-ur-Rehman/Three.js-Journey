@@ -64,12 +64,13 @@ const portalLightMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
  * Model
  */
 gltfLoader.load('portal.glb', (gltf) => {
-  gltf.scene.traverse((child) => {
-    child.material = bakedMaterial;
-  });
+  // gltf.scene.traverse((child) => {
+  //   child.material = bakedMaterial;
+  // });
   scene.add(gltf.scene);
 
   // Get each object
+  const bakedMesh = gltf.scene.children.find((child) => child.name === 'baked');
   const portalLightMesh = gltf.scene.children.find(
     (child) => child.name === 'portalLight'
   );
@@ -81,6 +82,7 @@ gltfLoader.load('portal.glb', (gltf) => {
   );
 
   // Apply materials
+  bakedMesh.material = bakedMaterial;
   poleLightAMesh.material = poleLightMaterial;
   poleLightBMesh.material = poleLightMaterial;
   portalLightMesh.material = portalLightMaterial;
