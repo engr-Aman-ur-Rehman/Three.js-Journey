@@ -39,14 +39,20 @@ gltfLoader.setDRACOLoader(dracoLoader);
 //   new THREE.BoxGeometry(1, 1, 1),
 //   new THREE.MeshBasicMaterial()
 // );
+// scene.add(cube);
 
-scene.add(cube);
+/**
+ * Textures
+ */
+const bakedTexture = textureLoader.load('baked.jpg');
+bakedTexture.flipY = false;
+bakedTexture.colorSpace = THREE.SRGBColorSpace;
 
 /**
  * Materials
  */
 // Baked material
-const bakedMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+const bakedMaterial = new THREE.MeshBasicMaterial({ map: bakedTexture });
 
 /**
  * Model
