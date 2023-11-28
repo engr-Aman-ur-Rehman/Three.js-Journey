@@ -32,15 +32,6 @@ dracoLoader.setDecoderPath('draco/');
 const gltfLoader = new GLTFLoader();
 gltfLoader.setDRACOLoader(dracoLoader);
 
-// /**
-//  * Object
-//  */
-// const cube = new THREE.Mesh(
-//   new THREE.BoxGeometry(1, 1, 1),
-//   new THREE.MeshBasicMaterial()
-// );
-// scene.add(cube);
-
 /**
  * Textures
  */
@@ -58,18 +49,12 @@ const bakedMaterial = new THREE.MeshBasicMaterial({ map: bakedTexture });
 const poleLightMaterial = new THREE.MeshBasicMaterial({ color: 0xffffe5 });
 
 // Portal light material
-const portalLightMaterial = new THREE.MeshBasicMaterial({
-  color: 0xffffff,
-  side: THREE.DoubleSide,
-});
+const portalLightMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
 
 /**
  * Model
  */
 gltfLoader.load('portal.glb', (gltf) => {
-  // gltf.scene.traverse((child) => {
-  //   child.material = bakedMaterial;
-  // });
   scene.add(gltf.scene);
 
   // Get each object
@@ -86,9 +71,9 @@ gltfLoader.load('portal.glb', (gltf) => {
 
   // Apply materials
   bakedMesh.material = bakedMaterial;
+  portalLightMesh.material = portalLightMaterial;
   poleLightAMesh.material = poleLightMaterial;
   poleLightBMesh.material = poleLightMaterial;
-  portalLightMesh.material = portalLightMaterial;
 });
 
 /**
