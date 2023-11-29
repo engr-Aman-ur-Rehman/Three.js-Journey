@@ -3,9 +3,10 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
-
 import firefliesVertexShader from './shaders/fireflies/vertex.glsl'
 import firefliesFragmentShader from './shaders/fireflies/fragment.glsl'
+import portalVertexShader from './shaders/portal/vertex.glsl'
+import portalFragmentShader from './shaders/portal/fragment.glsl'
 
 /**
  * Base
@@ -53,7 +54,10 @@ const bakedMaterial = new THREE.MeshBasicMaterial({ map: bakedTexture });
 const poleLightMaterial = new THREE.MeshBasicMaterial({ color: 0xffffe5 });
 
 // Portal light material
-const portalLightMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
+const portalLightMaterial = new THREE.ShaderMaterial({
+  vertexShader: portalVertexShader,
+  fragmentShader: portalFragmentShader
+})
 
 /**
  * Model
@@ -195,7 +199,7 @@ const tick = () => {
 
   // Update materials
   firefliesMaterial.uniforms.uTime.value = elapsedTime
-  
+
   // Update controls
   controls.update();
 
