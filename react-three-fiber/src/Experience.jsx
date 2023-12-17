@@ -1,5 +1,6 @@
 import { OrbitControls } from '@react-three/drei'
 import { button, useControls } from 'leva'
+import { Perf } from 'r3f-perf'
 
 export default function Experience()
 {
@@ -31,8 +32,14 @@ export default function Experience()
             max: 5
         }
     })
+
+    const { perfVisible } = useControls({
+        perfVisible: true
+    })
     
     return <>
+        
+        { perfVisible && <Perf position="top-left" /> }
 
         <OrbitControls makeDefault />
 
