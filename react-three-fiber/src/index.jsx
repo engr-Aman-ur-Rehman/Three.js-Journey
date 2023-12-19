@@ -5,6 +5,16 @@ import Experience from './Experience.jsx'
 
 const root = ReactDOM.createRoot(document.querySelector('#root'))
 
+// const created = ({ gl }) =>
+// {
+//     gl.setClearColor('#ff0000', 1)
+// }
+
+const created = ({ scene }) =>
+{
+    scene.background = new THREE.Color('#ff0000')
+}
+
 root.render(
     <Canvas
         camera={ {
@@ -13,6 +23,7 @@ root.render(
             far: 200,
             position: [ - 4, 3, 6 ]
         } }
+        onCreated={ created }
     >
         <Experience />
     </Canvas>
