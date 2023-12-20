@@ -2,6 +2,7 @@ import './style.css'
 import ReactDOM from 'react-dom/client'
 import { Canvas } from '@react-three/fiber'
 import Experience from './Experience.jsx'
+import * as THREE from 'three'
 
 const root = ReactDOM.createRoot(document.querySelector('#root'))
 
@@ -10,10 +11,10 @@ const root = ReactDOM.createRoot(document.querySelector('#root'))
 //     gl.setClearColor('#ff0000', 1)
 // }
 
-const created = ({ scene }) =>
-{
-    scene.background = new THREE.Color('#ff0000')
-}
+// const created = ({ scene }) =>
+// {
+//     scene.background = new THREE.Color('#ff0000')
+// }
 
 root.render(
     <Canvas
@@ -23,8 +24,9 @@ root.render(
             far: 200,
             position: [ - 4, 3, 6 ]
         } }
-        onCreated={ created }
+        // onCreated={ created }
     >
+        {/* <color args={ [ '#ff0000' ] } attach="background" /> */}
         <Experience />
     </Canvas>
 )
