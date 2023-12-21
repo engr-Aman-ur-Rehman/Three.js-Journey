@@ -69,11 +69,11 @@ export default function Experience()
                 form="ring"
             />
 
-            {/* <mesh position-z={ - 5 } scale={ 10 }>
+             <mesh position-z={ - 5 } scale={ 10 }>
             <planeGeometry />
             <meshBasicMaterial color={ [ 1, 0, 0 ] } />
-            </mesh> */}
-        {/* </Environment> */} */}
+            </mesh> 
+         </Environment> */}
 
         
 
@@ -153,7 +153,7 @@ export default function Experience()
         <Stage shadows={ { type: 'contact', opacity: 0.2, blur: 3 } }
         environment="sunset"
         preset="portrait"
-        intensity={ 6 }
+         intensity={ 6 }
         >
         <mesh castShadow position-y={ 1 } position-x={ - 2 }>
             <sphereGeometry />
