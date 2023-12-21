@@ -1,5 +1,5 @@
 import { useFrame } from '@react-three/fiber'
-import { ContactShadows, RandomizedLight, AccumulativeShadows, SoftShadows, BakeShadows, useHelper, OrbitControls } from '@react-three/drei'
+import { Sky, ContactShadows, RandomizedLight, AccumulativeShadows, SoftShadows, BakeShadows, useHelper, OrbitControls } from '@react-three/drei'
 import { useRef } from 'react'
 import { Perf } from 'r3f-perf'
 import * as THREE from 'three'
@@ -24,6 +24,10 @@ export default function Experience()
         color: '#1d8f75',
         opacity: { value: 0.4, min: 0, max: 1 },
         blur: { value: 2.8, min: 0, max: 10 },
+    })
+
+    const { sunPosition } = useControls('sky', {
+        sunPosition: { value: [ 1, 2, 3 ] }
     })
 
     return <>
@@ -71,7 +75,7 @@ export default function Experience()
         <directionalLight 
         ref={ directionalLight } 
         castShadow 
-        position={ [ 1, 2, 3 ] } 
+        position={ sunPosition } 
         intensity={ 4.5 } 
         shadow-mapSize={ [ 1024, 1024 ] }
         shadow-camera-near={ 1 }
@@ -80,6 +84,11 @@ export default function Experience()
         shadow-camera-right={ 5 }
         shadow-camera-bottom={ - 5 }
         shadow-camera-left={ - 5 } />
+
+        <ambientLight intensity={2} />
+
+        <Sky sunPosition={ sunPosition } />
+
 
         <mesh castShadow position-x={ - 2 }>
             <sphereGeometry />
