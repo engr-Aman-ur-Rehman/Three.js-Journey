@@ -1,14 +1,16 @@
 import {useMatcapTexture, Center, Text3D, OrbitControls } from '@react-three/drei'
 import { Perf } from 'r3f-perf'
-import { useEffect, useState } from 'react'
+import { useRef, useEffect, useState } from 'react'
 import * as THREE from 'three'
-
+import { useFrame } from '@react-three/fiber'
 
 const torusGeometry = new THREE.TorusGeometry(1, 0.6, 16, 32)
 const material = new THREE.MeshMatcapMaterial()
 
 export default function Experience()
 {
+    const donuts = useRef([])
+
     const matcapTexture = useMatcapTexture('7B5254_E9DCC7_B19986_C8AC91', 256)
     
     // const [ torusGeometry, setTorusGeometry ] = useState()
@@ -22,6 +24,16 @@ export default function Experience()
         material.matcap = matcapTexture
         material.needsUpdate = true
     }, [])
+
+    const donutsGroup = useRef()
+
+    useFrame((state, delta) =>
+{
+    for(const donut of donuts.current)
+    {
+        donut.rotation.y += delta * 0.2
+    }
+})
 
     return <>
 
@@ -51,6 +63,7 @@ export default function Experience()
 
         { [...Array(100)].map((value, index) =>
             <mesh 
+                ref={ (element) => donuts.current[index] = element  }
                 key={ index }
                 material={ material }
                 geometry={ torusGeometry }
