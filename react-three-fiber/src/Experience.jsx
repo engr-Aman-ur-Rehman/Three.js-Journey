@@ -1,4 +1,4 @@
-import { Center, useTexture, useGLTF, OrbitControls } from '@react-three/drei'
+import { Sparkles, Center, useTexture, useGLTF, OrbitControls } from '@react-three/drei'
 
 export default function Experience()
 {
@@ -43,6 +43,13 @@ export default function Experience()
                 <meshBasicMaterial color="#ffffff" />
             </mesh>
 
+            <Sparkles
+                size={ 6 }
+                scale={ [ 4, 2, 4 ] }
+                position-y={ 1 }
+                speed={ 0.2 }
+                count={ 40 }
+            />
         </Center>
 
     </>
