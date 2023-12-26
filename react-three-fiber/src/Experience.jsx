@@ -1,94 +1,59 @@
-import * as THREE from 'three'
+import { useFrame } from '@react-three/fiber'
+import { OrbitControls } from '@react-three/drei'
 import { useRef } from 'react'
-import { useFrame, extend } from '@react-three/fiber'
-import { shaderMaterial, Sparkles, Center, useTexture, useGLTF, OrbitControls } from '@react-three/drei'
-import portalVertexShader from './shaders/portal/vertex.glsl'
-import portalFragmentShader from './shaders/portal/fragment.glsl'
-
-
-const PortalMaterial = shaderMaterial(
-    {
-        uTime: 0,
-        uColorStart: new THREE.Color('#ffffff'),
-        uColorEnd: new THREE.Color('#000000')
-    },
-    portalVertexShader,
-    portalFragmentShader
-)
-extend({ PortalMaterial })
-
 
 export default function Experience()
 {
-    const { nodes } = useGLTF('./model/portal.glb')
-    const bakedTexture = useTexture('./model/baked.jpg')
-    bakedTexture.flipY = false
-
-    const portalMaterial = useRef()
-
+    const cube = useRef()
+    
     useFrame((state, delta) =>
     {
-        portalMaterial.current.uTime += delta
+        cube.current.rotation.y += delta * 0.2
     })
-    
+
+    const eventHandler = (event) =>
+    {
+        // console.log('---')
+        // console.log('distance', event.distance) // Distance between camera and hit point
+        // console.log('point', event.point) // Hit point coordinates (in 3D)
+        // console.log('uv', event.uv) // UV coordinates on the geometry (in 2D)
+        // console.log('object', event.object) // The object that triggered the event
+        // console.log('eventObject', event.eventObject) // The object that was listening to the event (useful where there is objects in objects)
+
+        // console.log('---')
+        // console.log('x', event.x) // 2D screen coordinates of the pointer
+        // console.log('y', event.y) // 2D screen coordinates of the pointer
+
+        // console.log('---')
+        // console.log('shiftKey', event.shiftKey) // If the SHIFT key was pressed
+        // console.log('ctrlKey', event.ctrlKey) // If the CTRL key was pressed
+        // console.log('metaKey', event.metaKey) // If the COMMAND key was pressed
+
+        console.log('the event occured')
+        cube.current.material.color.set(`hsl(${Math.random() * 360}, 100%, 75%)`)
+    }
 
     return <>
-        <color args={ [ '#030202' ] } attach="background" />
 
         <OrbitControls makeDefault />
 
-        {/* <mesh scale={ 1.5 }>
+        <directionalLight position={ [ 1, 2, 3 ] } intensity={ 4.5 } />
+        <ambientLight intensity={ 1.5 } />
+
+        <mesh position-x={ - 2 }>
+            <sphereGeometry />
+            <meshStandardMaterial color="orange" />
+        </mesh>
+
+        <mesh ref={ cube } position-x={ 2 } scale={ 1.5 } onClick={ eventHandler }>
             <boxGeometry />
-            <meshNormalMaterial />
-        </mesh> */}
+            <meshStandardMaterial color="mediumpurple" />
+        </mesh>
 
-        <Center>
-            <mesh geometry={ nodes.baked.geometry }>
-                <meshBasicMaterial map={ bakedTexture } />
-            </mesh>
-
-            <mesh 
-            geometry={ nodes.poleLightA.geometry } 
-            position={ nodes.poleLightA.position } 
-            >
-                <meshBasicMaterial color="#ffffe5" />
-            </mesh>
-
-            <mesh 
-            geometry={ nodes.poleLightB.geometry }  
-            position={ nodes.poleLightB.position }
-            >
-              <meshBasicMaterial color="#ffffe5" />
-            </mesh>
-
-            <mesh 
-            geometry={ nodes.portalLight.geometry } 
-            position={ nodes.portalLight.position }
-            rotation={ nodes.portalLight.rotation }
-            >
-                {/* <meshBasicMaterial color="#ffffff" /> */}
-                {/* <shaderMaterial
-                    vertexShader={ portalVertexShader }
-                    fragmentShader={ portalFragmentShader }
-                    uniforms={ {
-                        uTime: { value: 0 },
-                        uColorStart: { value: new THREE.Color('#ffffff') },
-                        uColorEnd: { value: new THREE.Color('#000000') }
-                    } }
-                /> */}
-
-                <portalMaterial ref={ portalMaterial }/>
-
-            </mesh>
-
-            <Sparkles
-                size={ 6 }
-                scale={ [ 4, 2, 4 ] }
-                position-y={ 1 }
-                speed={ 0.2 }
-                count={ 40 }
-            />
-        </Center>
+        <mesh position-y={ - 1 } rotation-x={ - Math.PI * 0.5 } scale={ 10 }>
+            <planeGeometry />
+            <meshStandardMaterial color="greenyellow" />
+        </mesh>
 
     </>
 }
