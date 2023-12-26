@@ -1,5 +1,5 @@
 import { useFrame } from '@react-three/fiber'
-import { OrbitControls } from '@react-three/drei'
+import { useGLTF, OrbitControls } from '@react-three/drei'
 import { useRef } from 'react'
 
 export default function Experience()
@@ -40,12 +40,19 @@ export default function Experience()
         <directionalLight position={ [ 1, 2, 3 ] } intensity={ 4.5 } />
         <ambientLight intensity={ 1.5 } />
 
-        <mesh position-x={ - 2 }>
+        <mesh position-x={ - 2 } onClick={ (event) => event.stopPropagation() }>
             <sphereGeometry />
             <meshStandardMaterial color="orange" />
         </mesh>
 
-        <mesh ref={ cube } position-x={ 2 } scale={ 1.5 } onClick={ eventHandler }>
+        <mesh 
+        ref={ cube } 
+        position-x={ 2 } 
+        scale={ 1.5 } 
+        onClick={ eventHandler }
+        onPointerEnter={ () => { document.body.style.cursor = 'pointer' } }
+        onPointerLeave={ () => { document.body.style.cursor = 'default' } }
+        >
             <boxGeometry />
             <meshStandardMaterial color="mediumpurple" />
         </mesh>
