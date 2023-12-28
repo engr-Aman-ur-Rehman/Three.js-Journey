@@ -1,14 +1,16 @@
 import { OrbitControls } from '@react-three/drei'
 import { Perf } from 'r3f-perf'
-import { EffectComposer } from '@react-three/postprocessing'
+import { ToneMapping, Vignette, EffectComposer } from '@react-three/postprocessing'
 
 export default function Experience()
 {
     return <>
 
-        <EffectComposer disableNormalPass multisampling={ 0 }>
-        
+        <EffectComposer disableNormalPass>
+            <Vignette />
+            <ToneMapping />
         </EffectComposer>
+        
         <Perf position="top-left" />
 
         <OrbitControls makeDefault />
