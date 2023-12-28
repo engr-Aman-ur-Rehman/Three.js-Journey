@@ -16,6 +16,7 @@
     "@react-three/fiber": "8.15",
     "@react-three/postprocessing": "2.15",
     "leva": "^0.9.35",
+    "postprocessing": "6.33",
     "r3f-perf": "7.1",
     "react": "18.2",
     "react-dom": "18.2",
