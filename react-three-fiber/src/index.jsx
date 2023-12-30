@@ -22,6 +22,7 @@ root.render(
         <Bvh>
             <Experience />
         </Bvh>
-        
+
+        <color attach="background" args={[ '#ffffff' ]} />
     </Canvas>
 )

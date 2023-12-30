@@ -1,21 +1,41 @@
 import { OrbitControls } from '@react-three/drei'
 import { Perf } from 'r3f-perf'
-import { ToneMapping, Vignette, EffectComposer } from '@react-three/postprocessing'
-import { BlendFunction } from 'postprocessing'
+import { DepthOfField, Bloom, Noise, Glitch, ToneMapping, Vignette, EffectComposer } from '@react-three/postprocessing'
+import { GlitchMode, BlendFunction } from 'postprocessing'
 
 export default function Experience()
 {
     return <>
 
-        <color args={ [ '#ffffff' ] } attach="background" />
+        {/* <color args={ [ '#000000' ] } attach="background" /> */}
 
         <EffectComposer disableNormalPass>
-            <Vignette 
+            {/* <Vignette 
                 offset={ 0.3 }
                 darkness={ 0.9 }
                 blendFunction={ BlendFunction.NORMAL }
-                />
-            <ToneMapping />
+            /> */}
+            
+
+            {/* <Glitch 
+            delay={ [ 0.5, 1 ] }
+            duration={ [ 0.1, 0.3 ] }
+            strength={ [ 0.2, 0.4 ] }
+            mode={ GlitchMode.CONSTANT_MILD }/> */}
+
+            {/* <Noise
+                premultiply
+                blendFunction={ BlendFunction.SOFT_LIGHT }
+            /> */}
+
+            {/* <Bloom luminanceThreshold={ 1.1 } mipmapBlur intensity={ 0.5 } /> */}
+
+            {/* <DepthOfField
+                focusDistance={ 0.025 }
+                focalLength={ 0.025 }
+                bokehScale={ 6 }
+            /> */}
+            <ToneMapping /> 
         </EffectComposer>
 
         <Perf position="top-left" />
@@ -33,6 +53,13 @@ export default function Experience()
         <mesh castShadow position-x={ 2 } scale={ 1.5 }>
             <boxGeometry />
             <meshStandardMaterial color="mediumpurple" />
+            {/* <meshStandardMaterial 
+             color="#ffffff"
+             emissive="orange"
+             emissiveIntensity={ 2 }
+            // color={ [ 1.5, 1, 4 ] }
+            /> */}
+            {/* <meshBasicMaterial color={ [ 1.5, 1, 4 ] } /> */}
         </mesh>
 
         <mesh receiveShadow position-y={ - 1 } rotation-x={ - Math.PI * 0.5 } scale={ 10 }>
