@@ -152,7 +152,9 @@ function Bounds({ length = 1 })
             />
              <CuboidCollider 
              args={ [ 1, 1, 1 ] } 
-             position={ [ 0, -0.1, - (length * 2) + 2 ] }/>
+             position={ [ 0, -0.1, - (length * 2) + 2 ] }
+             restitution={ 0.2 }
+            friction={ 1 }/>
         </RigidBody>
     </>
 }
